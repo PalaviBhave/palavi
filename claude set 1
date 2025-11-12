@@ -1,0 +1,384 @@
+# Database Solutions - Complete Execution Guide
+
+## Prerequisites
+
+```bash
+# Install MySQL
+sudo apt-get update
+sudo apt-get install mysql-server
+
+# Install MongoDB
+sudo apt-get install -y mongodb-org
+
+# Start services
+sudo systemctl start mysql
+sudo systemctl start mongod
+```
+
+## MySQL Solutions Execution
+
+### Method 1: Execute from File
+
+```bash
+# Save SQL code to file
+cat > mysql_solutions.sql << 'EOF'
+# Copy all content from "SQL Solutions" artifact here
+EOF
+
+# Execute the SQL file
+mysql -u root -p < mysql_solutions.sql
+```
+
+### Method 2: Execute Directly in MySQL Shell
+
+```bash
+# Login to MySQL
+mysql -u root -p
+
+# Then copy-paste sections from the artifacts one by one
+```
+
+### Method 3: Execute Specific Problems
+
+```bash
+# For Problem 1 (Company Database)
+mysql -u root -p << 'EOF'
+CREATE DATABASE IF NOT EXISTS company;
+USE company;
+-- Copy rest of Problem 1 code here
+EOF
+
+# For Problem 2 (Employee Database)
+mysql -u root -p << 'EOF'
+CREATE DATABASE IF NOT EXISTS employee_db;
+USE employee_db;
+-- Copy rest of Problem 2 code here
+EOF
+```
+
+## PL/SQL Solutions Execution
+
+```bash
+# Login to MySQL
+mysql -u root -p
+
+# Execute PL/SQL procedures and triggers
+source plsql_solutions.sql
+
+# Or copy-paste individual procedures
+```
+
+### Testing PL/SQL Procedures
+
+```bash
+mysql -u root -p << 'EOF'
+USE company;
+
+-- Test attendance procedure
+CALL CheckAttendance(1);
+
+-- Test withdrawal procedure  
+CALL WithdrawAmount(1001, 2000);
+
+-- Test fine calculation
+CALL CalculateFine(101, 'Database Systems');
+
+-- View results
+SELECT * FROM Fine;
+SELECT * FROM audit_trade;
+EOF
+```
+
+## MongoDB Solutions Execution
+
+### Method 1: Execute from File
+
+```bash
+# Save MongoDB code to file
+cat > mongodb_solutions.js << 'EOF'
+// Copy all content from "MongoDB Solutions" artifact here
+EOF
+
+# Execute the MongoDB script
+mongo < mongodb_solutions.js
+```
+
+### Method 2: Execute in MongoDB Shell
+
+```bash
+# Start MongoDB shell
+mongo
+
+# Copy-paste sections from MongoDB artifact
+```
+
+### Method 3: Execute Specific Problems
+
+```bash
+# For Problem 19
+mongo << 'EOF'
+use DYPIT
+
+db.Teachers.insertMany([
+    {Tname: "Rajesh", dno: 1, dname: "Computer", experience: 5, salary: 50000},
+    {Tname: "Praveen", dno: 2, dname: "IT", experience: 8, salary: 60000}
+])
+
+db.Teachers.find().pretty()
+EOF
+```
+
+### Import JSON Files for MongoDB
+
+```bash
+# For Problem 23 and 26 - Import zip.json
+# First, create sample zip.json if you don't have it
+cat > zip.json << 'EOF'
+[
+  {"city": "AGAWAM", "loc": [-72.622739, 42.070206], "pop": 15338, "state": "MA"},
+  {"city": "CUSHMAN", "loc": [-72.51565, 42.377017], "pop": 36963, "state": "MA"},
+  {"city": "BARRE", "loc": [-72.108354, 42.409698], "pop": 4546, "state": "MA"},
+  {"city": "TIMKEN", "loc": [-81.234567, 38.876543], "pop": 2345, "state": "KS"}
+]
+EOF
+
+# Import into MongoDB
+mongoimport --db DYPIT --collection zipcodes --file zip.json --jsonArray
+```
+
+## Quick Test Commands
+
+### Test MySQL Installation
+
+```bash
+mysql -u root -p -e "SELECT VERSION();"
+mysql -u root -p -e "SHOW DATABASES;"
+```
+
+### Test MongoDB Installation
+
+```bash
+mongo --eval "db.version()"
+mongo --eval "show dbs"
+```
+
+## Common MySQL Commands
+
+```bash
+# Show all databases
+mysql -u root -p -e "SHOW DATABASES;"
+
+# Show tables in a database
+mysql -u root -p -e "USE company; SHOW TABLES;"
+
+# Show table structure
+mysql -u root -p -e "USE company; DESCRIBE emp;"
+
+# Execute a single query
+mysql -u root -p company -e "SELECT * FROM emp;"
+
+# Drop a database (be careful!)
+mysql -u root -p -e "DROP DATABASE IF EXISTS company;"
+```
+
+## Common MongoDB Commands
+
+```bash
+# Show all databases
+mongo --eval "show dbs"
+
+# Show collections in a database
+mongo --eval "use DYPIT; show collections"
+
+# Count documents
+mongo --eval "use DYPIT; db.Teachers.count()"
+
+# Find all documents
+mongo --eval "use DYPIT; db.Teachers.find().pretty()"
+
+# Drop a collection
+mongo --eval "use DYPIT; db.Teachers.drop()"
+
+# Drop a database
+mongo --eval "use DYPIT; db.dropDatabase()"
+```
+
+## Troubleshooting
+
+### MySQL Issues
+
+```bash
+# Reset MySQL root password
+sudo mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'newpassword';
+FLUSH PRIVILEGES;
+EXIT;
+
+# Check MySQL status
+sudo systemctl status mysql
+
+# Restart MySQL
+sudo systemctl restart mysql
+
+# Check MySQL error log
+sudo tail -f /var/log/mysql/error.log
+```
+
+### MongoDB Issues
+
+```bash
+# Check MongoDB status
+sudo systemctl status mongod
+
+# Restart MongoDB
+sudo systemctl restart mongod
+
+# Check MongoDB log
+sudo tail -f /var/log/mongodb/mongod.log
+
+# Connect to MongoDB with authentication
+mongo -u username -p password --authenticationDatabase admin
+```
+
+## Batch Execution Script
+
+Create a master script to run everything:
+
+```bash
+cat > run_all_solutions.sh << 'EOF'
+#!/bin/bash
+
+echo "========================================="
+echo "Executing MySQL Solutions"
+echo "========================================="
+
+# Execute MySQL solutions
+mysql -u root -p < mysql_solutions.sql
+mysql -u root -p < plsql_solutions.sql
+
+echo "========================================="
+echo "Executing MongoDB Solutions"
+echo "========================================="
+
+# Execute MongoDB solutions
+mongo < mongodb_solutions.js
+
+echo "========================================="
+echo "All Solutions Executed Successfully!"
+echo "========================================="
+EOF
+
+chmod +x run_all_solutions.sh
+./run_all_solutions.sh
+```
+
+## Verification Queries
+
+### Verify MySQL Solutions
+
+```bash
+mysql -u root -p << 'EOF'
+-- Check Problem 1
+USE company;
+SELECT 'Problem 1 - Emp Table' AS Status;
+SELECT COUNT(*) AS total_employees FROM emp;
+
+-- Check Problem 2
+USE employee_db;
+SELECT 'Problem 2 - Works Table' AS Status;
+SELECT COUNT(*) AS total_records FROM works;
+
+-- Check Hotel Database
+USE hotel_db;
+SELECT 'Hotel Database' AS Status;
+SELECT COUNT(*) AS total_hotels FROM Hotel;
+
+SHOW DATABASES;
+EOF
+```
+
+### Verify MongoDB Solutions
+
+```bash
+mongo << 'EOF'
+use DYPIT
+
+print("========================================")
+print("Verifying MongoDB Collections")
+print("========================================")
+
+print("\nTeachers Collection Count:")
+print(db.Teachers.count())
+
+print("\nStudents Collection Count:")
+print(db.Students.count())
+
+print("\nSample Teacher Document:")
+printjson(db.Teachers.findOne())
+
+print("\nAll Databases:")
+show dbs
+
+print("\nAll Collections in DYPIT:")
+show collections
+EOF
+```
+
+## Performance Tips
+
+1. **For MySQL:**
+   - Create indexes on frequently queried columns
+   - Use EXPLAIN to analyze query performance
+   - Optimize with proper data types
+
+2. **For MongoDB:**
+   - Create indexes on frequently queried fields
+   - Use aggregation pipeline instead of MapReduce when possible
+   - Monitor with `db.currentOp()` and `db.serverStatus()`
+
+## Export Results
+
+### Export MySQL Results to CSV
+
+```bash
+mysql -u root -p company -e "SELECT * FROM emp;" | sed 's/\t/,/g' > emp_export.csv
+```
+
+### Export MongoDB Collection to JSON
+
+```bash
+mongoexport --db DYPIT --collection Teachers --out teachers_export.json --pretty
+```
+
+## Cleanup Commands
+
+```bash
+# Remove all MySQL databases created
+mysql -u root -p << 'EOF'
+DROP DATABASE IF EXISTS company;
+DROP DATABASE IF EXISTS employee_db;
+DROP DATABASE IF EXISTS hotel_db;
+DROP DATABASE IF EXISTS project_db;
+DROP DATABASE IF EXISTS position_db;
+DROP DATABASE IF EXISTS banking_db;
+DROP DATABASE IF EXISTS publisher_db;
+EOF
+
+# Remove MongoDB database
+mongo << 'EOF'
+use DYPIT
+db.dropDatabase()
+use library
+db.dropDatabase()
+EOF
+```
+
+---
+
+## Notes
+
+1. Replace `root` and passwords with your actual MySQL credentials
+2. Ensure proper permissions for file operations
+3. Back up existing databases before running these scripts
+4. Some queries require sample data - ensure data is inserted first
+5. For production systems, always test in a development environment first
